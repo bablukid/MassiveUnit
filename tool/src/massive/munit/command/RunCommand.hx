@@ -605,6 +605,10 @@ class RunCommand extends MUnitTargetCommandBase
 		}
 
 		parameters.push(targetLocation);
+		
+		
+		//hack
+		if(FileSys.isLinux && browser == null) parameters.push(" 2>xdg-open.log & ");
 
 		var exitCode:Int = Sys.command(parameters.join(" "));
 		
