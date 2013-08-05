@@ -51,7 +51,7 @@ import haxe.ds.StringMap;
 #else
 private typedef StringMap<T> = Hash<T>
 #end
- 
+
 /**
 Don't ask - compiler always thinks it is massive.munit.TargetType enum 'neko'
 */
@@ -174,11 +174,11 @@ class RunCommand extends MUnitTargetCommandBase
 				if (type == TargetType.neko)
 				{
 					hasNekoTests = true;
-				}	
+				}
 				if (type == TargetType.cpp)
 				{
 					hasCPPTests = true;
-				}	
+				}
 			}
 			
 		}
@@ -348,6 +348,7 @@ class RunCommand extends MUnitTargetCommandBase
 
 	override public function execute():Void
 	{
+		
 		if (FileSys.isWindows)
 		{
 			//Windows has issue releasing port registries reliably.
@@ -379,14 +380,14 @@ class RunCommand extends MUnitTargetCommandBase
 
 		var serverProcess:Process = null;
 
-		try
-		{
-			serverProcess = new Process("nekotools", ["server"]);
-		}
-		catch(e:Dynamic)
-		{
-			error("Unable to launch nekotools server. Please kill existing process and try again.", 1);
-		}
+		//try
+		//{
+			//serverProcess = new Process("nekotools", ["server"]);
+		//}
+		//catch(e:Dynamic)
+		//{
+			//error("Unable to launch nekotools server. Please kill existing process and try again.", 1);
+		//}
 		
 		
 		var resultMonitor = Thread.create(monitorResults);
@@ -407,7 +408,9 @@ class RunCommand extends MUnitTargetCommandBase
 
 		var platformResults:Bool = Thread.readMessage(true);
 
-		serverProcess.kill();
+		//serverProcess.kill();
+		//Sys.print( "Server stdout: " + serverProcess.stdout.readAll() );
+		//Sys.print( "Server stderr: " + serverProcess.stderr.readAll() );
 
 		if (reportTestDir.exists)
 			reportTestDir.deleteDirectoryContents();
@@ -597,7 +600,7 @@ class RunCommand extends MUnitTargetCommandBase
 		{
 			if (browser != null)
 				parameters.push(browser);
-			else 
+			else
 				parameters.push("xdg-open");
 		}
 
@@ -607,7 +610,7 @@ class RunCommand extends MUnitTargetCommandBase
 		
 		if (exitCode > 0)
 			error("Error running " + targetLocation, exitCode);
-  
+
 		return exitCode;
 	}
 
@@ -617,7 +620,7 @@ class RunCommand extends MUnitTargetCommandBase
 		file.copyTo(reportRunnerFile);
 
 		FileSys.setCwd(config.dir.nativePath);
-  
+
 		var exitCode = runCommand("neko " + reportRunnerFile.nativePath);
 
 		FileSys.setCwd(console.originalDir.nativePath);
@@ -635,7 +638,7 @@ class RunCommand extends MUnitTargetCommandBase
 		file.copyTo(tmpFile);
 
 		FileSys.setCwd(config.dir.nativePath);
-  
+
 		var exitCode = runCommand(file.nativePath);
 
 		FileSys.setCwd(console.originalDir.nativePath);

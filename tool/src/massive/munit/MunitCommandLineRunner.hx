@@ -1,16 +1,16 @@
 /**************************************** ****************************************
  * Copyright 2010 Massive Interactive. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  *    1. Redistributions of source code must retain the above copyright notice, this list of
  *       conditions and the following disclaimer.
- * 
+ *
  *    2. Redistributions in binary form must reproduce the above copyright notice, this list
  *       of conditions and the following disclaimer in the documentation and/or other materials
  *       provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY MASSIVE INTERACTIVE ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MASSIVE INTERACTIVE OR
@@ -20,7 +20,7 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Massive Interactive.
@@ -49,7 +49,6 @@ class MunitCommandLineRunner extends CommandLineRunner
 	function new():Void
 	{
 		super();
-		
 		mapCommand(GenerateCommand, "gen", ["g"], "Generate a test runner based on classes in a test src directory", Resource.getString("help_gen"));
 		mapCommand(RunCommand, "run", ["r"], "Runs a single unit test target and generates results", Resource.getString("help_run"));
 		mapCommand(TestCommand, "test", ["t"], "Updates, compiles and runs all targets from an hxml file", Resource.getString("help_test"));
@@ -67,7 +66,7 @@ class MunitCommandLineRunner extends CommandLineRunner
 	{
 		var command:ICommand = super.createCommandInstance(commandClass);
 		
-		var className:String = Type.getClassName(commandClass);	
+		var className:String = Type.getClassName(commandClass);
 		Log.debug("Command: " + className);
 	
 		var cmd:MUnitCommand = cast(command, MUnitCommand);
@@ -77,7 +76,7 @@ class MunitCommandLineRunner extends CommandLineRunner
 	}
 	
 	override public function printHeader():Void
-	{	
+	{
 		print("Massive Unit - Copyright " + Date.now().getFullYear() + " Massive Interactive. Version " + version);
 	}
 	

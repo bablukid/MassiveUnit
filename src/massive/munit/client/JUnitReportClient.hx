@@ -1,16 +1,16 @@
 /****
 * Copyright 2013 Massive Interactive. All rights reserved.
-* 
+*
 * Redistribution and use in source and binary forms, with or without modification, are
 * permitted provided that the following conditions are met:
-* 
+*
 *    1. Redistributions of source code must retain the above copyright notice, this list of
 *       conditions and the following disclaimer.
-* 
+*
 *    2. Redistributions in binary form must reproduce the above copyright notice, this list
 *       of conditions and the following disclaimer in the documentation and/or other materials
 *       provided with the distribution.
-* 
+*
 * THIS SOFTWARE IS PROVIDED BY MASSIVE INTERACTIVE ``AS IS'' AND ANY EXPRESS OR IMPLIED
 * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
 * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MASSIVE INTERACTIVE OR
@@ -20,7 +20,7 @@
 * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-* 
+*
 * The views and conclusions contained in the software and documentation are those of the
 * authors and should not be interpreted as representing official policies, either expressed
 * or implied, of Massive Interactive.
@@ -33,9 +33,9 @@ import massive.munit.util.MathUtil;
 import massive.munit.util.Timer;
 
 /**
- * Generates xml formatted tests results compliant for processing by the JUnitReport 
+ * Generates xml formatted tests results compliant for processing by the JUnitReport
  * Apache Ant task (http://ant.apache.org/manual/Tasks/junitreport.html).
- * 
+ *
  * @author Mike Stead
  */
 class JUnitReportClient implements IAdvancedTestResultClient
@@ -60,7 +60,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	public var completionHandler(get_completionHandler, set_completionHandler):ITestResultClient -> Void;
 	#end
 	
-	private function get_completionHandler():ITestResultClient -> Void 
+	private function get_completionHandler():ITestResultClient -> Void
 	{
 		return completionHandler;
 	}
@@ -71,7 +71,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 
 	/**
 	 * Newline delimiter. Defaults to '\n'.
-	 * 
+	 *
 	 * <p>
 	 * Should be set before the client is passed to a test runner.
 	 * </p>
@@ -93,7 +93,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		id = DEFAULT_ID;
 		xml = new StringBuf();
-		currentTestClass = "";		
+		currentTestClass = "";
 		newline = "\n";
 		testSuiteXML = null;
 		xml.add("<testsuites>" + newline);
@@ -118,7 +118,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 
 	/**
 	 * Called when a test passes.
-	 *  
+	 *
 	 * @param	result			a passed test result
 	 */
 	public function addPass(result:TestResult):Void
@@ -130,7 +130,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	
 	/**
 	 * Called when a test fails.
-	 *  
+	 *
 	 * @param	result			a failed test result
 	 */
 	public function addFail(result:TestResult):Void
@@ -146,7 +146,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	
 	/**
 	 * Called when a test triggers an unexpected exception.
-	 *  
+	 *
 	 * @param	result			an erroneous test result
 	 */
 	public function addError(result:TestResult):Void
@@ -168,7 +168,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	public function addIgnore(result:TestResult):Void
 	{
 		// TODO: Looks like the "skipped" element is not in the official junit report schema
-		//       so ignoring the reporting of this for now. 
+		//       so ignoring the reporting of this for now.
 		//       https://issues.apache.org/bugzilla/show_bug.cgi?id=43969
 		//
 		//       ms 4.9.2011
@@ -176,7 +176,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 
 	/**
 	 * Called when all tests are complete.
-	 *  
+	 *
 	 * @param	testCount		total number of tests run
 	 * @param	passCount		total number of tests which passed
 	 * @param	failCount		total number of tests which failed
@@ -190,6 +190,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 
 		xml.add("</testsuites>");
 		if (completionHandler != null) completionHandler(this);
+				
 		return xml.toString();
 	}
 	
