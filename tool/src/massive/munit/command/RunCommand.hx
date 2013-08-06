@@ -101,15 +101,33 @@ class RunCommand extends MUnitTargetCommandBase
 
 	override public function initialise():Void
 	{
+		Log.setLogLevelFromString('all');
+		
+		Log.debug("initialiseTargets");
 		initialiseTargets(false);
-
+		
+		Log.debug("locateBinDir");
 		locateBinDir();
+		
+		Log.debug("gatherTestRunnerFiles");
 		gatherTestRunnerFiles();
+		
+		Log.debug("locateReportDir");
 		locateReportDir();
+		
+		Log.debug("checkForCustomBrowser");
 		checkForCustomBrowser();
+		
+		Log.debug("checkForBrowserKeepAliveFlag");
 		checkForBrowserKeepAliveFlag();
+		
+		Log.debug("resetOutputDirectories");
 		resetOutputDirectories();
+		
+		Log.debug("generateTestRunnerPages");
 		generateTestRunnerPages();
+		
+		Log.debug("checkForExitOnFail");
 		checkForExitOnFail();
 	}
 
@@ -141,13 +159,18 @@ class RunCommand extends MUnitTargetCommandBase
 
 	function gatherTestRunnerFiles()
 	{
+		
 		var tempTargets = [];
 
-		if (!binDir.isDirectory)
+		if (!binDir.isDirectory) {
+			Log.error("Bin dir is not a directory");
 			return;
+		}
 
-		if (!binDir.resolveDirectory(".temp").exists)
+		if (!binDir.resolveDirectory(".temp").exists) {
+			Log.error(".temp folder doesnt exist");
 			return;
+		}
 
 		for(target in targets)
 		{
@@ -348,7 +371,7 @@ class RunCommand extends MUnitTargetCommandBase
 
 	override public function execute():Void
 	{
-		
+		Log.debug('execute');
 		if (FileSys.isWindows)
 		{
 			//Windows has issue releasing port registries reliably.
@@ -359,6 +382,7 @@ class RunCommand extends MUnitTargetCommandBase
 		else
 		{
 			//for mac and linux we create a tmp directory locally within the bin
+			Log.debug('set cwd to '+binDir.nativePath);
 			FileSys.setCwd(binDir.nativePath);
 		}
 
@@ -375,6 +399,8 @@ class RunCommand extends MUnitTargetCommandBase
 			tmpDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
 
 		tmpRunnerDir = tmpDir.resolveDirectory("runner");
+		
+		Log.debug("copy "+reportRunnerDir.path+' to '+tmpRunnerDir.path);
 		reportRunnerDir.copyTo(tmpRunnerDir);
 
 
@@ -395,6 +421,7 @@ class RunCommand extends MUnitTargetCommandBase
 		resultMonitor.sendMessage(serverProcess);
 		resultMonitor.sendMessage(serverTimeoutTimeSec);
 
+		Log.debug("Launch file");
 		if (hasNekoTests)
 			launchNeko(nekoFile);
 
@@ -412,22 +439,31 @@ class RunCommand extends MUnitTargetCommandBase
 		//Sys.print( "Server stdout: " + serverProcess.stdout.readAll() );
 		//Sys.print( "Server stderr: " + serverProcess.stderr.readAll() );
 
-		if (reportTestDir.exists)
+		if (reportTestDir.exists) {
+			Log.debug('delete content in '+reportTestDir.path);
 			reportTestDir.deleteDirectoryContents();
+		}
 		
 		if (!FileSys.isWindows)
 		{
 			serverFile.deleteFile();
 		}
 
+		Log.debug('delete '+tmpRunnerDir.path);
 		tmpRunnerDir.deleteDirectory();
+		
+		Log.debug('copy '+tmpDir.path +" to "+reportTestDir.path);
 		tmpDir.copyTo(reportTestDir);
+		
+		Log.debug('delete ' + tmpDir.path);
 		tmpDir.deleteDirectory(true);
+		
+		Log.debug('set cwd to '+console.dir.nativePath);
 		FileSys.setCwd(console.dir.nativePath);
 
 		if (platformResults == false && resultExitCode)
 		{
-			//print("TESTS FAILED");
+			Log.error("TESTS FAILED");
 			Sys.stderr().writeString("TESTS FAILED\n");
 			Sys.stderr().flush();
 			
@@ -445,7 +481,7 @@ class RunCommand extends MUnitTargetCommandBase
 		if (FileSys.isWindows) return serverFile;
 		
 		var copy = File.current.resolveFile("index.n");
-
+		Log.debug("createServerAlias : copy "+serverFile.path+" to "+copy.path);
 		serverFile.copyTo(copy);
 		return copy;
 	}
