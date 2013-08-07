@@ -5,6 +5,7 @@ import massive.sys.io.FileSys;
 
 import massive.munit.Config;
 import massive.munit.Target;
+import massive.haxe.log.Log;
 
 class MUnitTargetCommandBase extends MUnitCommand
 {
@@ -12,7 +13,7 @@ class MUnitTargetCommandBase extends MUnitCommand
 	var targets:Array<Target>;
 	var targetTypes:Array<TargetType>;
 
-	var includeCoverage:Bool; 
+	var includeCoverage:Bool;
 
 	public function new()
 	{
@@ -35,13 +36,17 @@ class MUnitTargetCommandBase extends MUnitCommand
 
 	function initialiseTargets(getHxmlFromConsole:Bool)
 	{
+		//get targets from config (.munit) file
 		setTargetTypes();
 		setHXMLFile(getHxmlFromConsole);
+		//get targets from hxml file
 		setFilteredTargets();
 
 		hxml = config.hxml;
 		targetTypes = config.targetTypes;
-		targets = config.targets;	
+		targets = config.targets;
+		Log.debug("targets after filtering : " + targets.toString());
+		
 	}
 
 	///////// common utilities
@@ -85,6 +90,8 @@ class MUnitTargetCommandBase extends MUnitCommand
 			targetTypes = config.targetTypes.concat([]);
 		else
 			config.targetTypes = targetTypes;//update config targets
+			
+		Log.debug("targets : "+config.targetTypes.toString());
 	}
 
 	/**
@@ -120,7 +127,7 @@ class MUnitTargetCommandBase extends MUnitCommand
 			if (!hxml.exists)
 			{
 				error("Default hxml file path does not exist. Please run munit config.");
-			}			
+			}
 		}
 	}
 
@@ -131,7 +138,10 @@ class MUnitTargetCommandBase extends MUnitCommand
 	function setFilteredTargets()
 	{
 
-		if (config.targets.length > 0 ) return;
+		if (config.targets.length > 0 ) {
+			Log.debug('config.targets is empty');
+			return;
+		}
 
 		var tempTargets = getTargetsFromHXML(config.hxml);
 		
@@ -165,7 +175,7 @@ class MUnitTargetCommandBase extends MUnitCommand
 	*/
 	function getTargetsFromHXML(hxml:File):Array<Target>
 	{
-		var contents:String = hxml.readString();		
+		var contents:String = hxml.readString();
 		var lines:Array<String> = contents.split("\n");
 		var target:Target = new Target();
 		
@@ -184,7 +194,7 @@ class MUnitTargetCommandBase extends MUnitCommand
 				continue;
 			}
 			
-			var mainReg:EReg = ~/^-main (.*)/;	
+			var mainReg:EReg = ~/^-main (.*)/;
 			if (mainReg.match(line))
 			{
 				target.main = config.src.resolveFile(mainReg.matched(1) + ".hx");
@@ -224,7 +234,7 @@ class MUnitTargetCommandBase extends MUnitCommand
 						case as2: s = "swf-version 8";
 						case as3: s = "swf-version [^8]";
 						default: s = Std.string(type);
-					}	
+					}
 					var targetMatcher = new EReg("^-" + s, "");
 					if (targetMatcher.match(line))
 					{
@@ -243,7 +253,8 @@ class MUnitTargetCommandBase extends MUnitCommand
 			if(target.type != null)
 				updateHxmlOutput(target);
 		}
-
+		
+		Log.debug("getTargetsFromHXML :"+targets.toString());
 		return targets;
 	}
 
@@ -280,8 +291,9 @@ class MUnitTargetCommandBase extends MUnitCommand
 		}
 
 		output += " " + file;
-
+		
 		target.hxml += output + "\n";
+		Log.debug("updateHxmlOutput : "+target.hxml);
 	}
 
 	function getOutputFileFromLine(line:String):String

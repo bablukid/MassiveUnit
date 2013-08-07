@@ -101,32 +101,46 @@ class RunCommand extends MUnitTargetCommandBase
 
 	override public function initialise():Void
 	{
-		Log.setLogLevelFromString('all');
+		//Log.setLogLevelFromString('all');
 		
 		Log.debug("initialiseTargets");
 		initialiseTargets(false);
 		
+		Sys.sleep(5);
+		
 		Log.debug("locateBinDir");
 		locateBinDir();
+		
+		Sys.sleep(5);
 		
 		Log.debug("gatherTestRunnerFiles");
 		gatherTestRunnerFiles();
 		
+		//Sys.sleep(5);
+		
 		Log.debug("locateReportDir");
 		locateReportDir();
+		
+		//Sys.sleep(5);
 		
 		Log.debug("checkForCustomBrowser");
 		checkForCustomBrowser();
 		
+		//Sys.sleep(5);
+		
 		Log.debug("checkForBrowserKeepAliveFlag");
 		checkForBrowserKeepAliveFlag();
 		
+		
+		//Sys.sleep(5);
 		Log.debug("resetOutputDirectories");
 		resetOutputDirectories();
 		
+		//Sys.sleep(1);
 		Log.debug("generateTestRunnerPages");
 		generateTestRunnerPages();
 		
+		//Sys.sleep(1);
 		Log.debug("checkForExitOnFail");
 		checkForExitOnFail();
 	}
@@ -226,10 +240,9 @@ class RunCommand extends MUnitTargetCommandBase
 				error("Default report directory is not set. Please run munit config.");
 			if (!reportDir.exists)
 				reportDir.createDirectory();
-		}
-		else
-		{
-			reportDir = File.create(reportPath, console.dir);
+		}else{
+			
+			//reportDir = File.create(reportPath, console.dir);
 
 			if (!reportDir.exists)
 				reportDir.createDirectory();
@@ -261,26 +274,35 @@ class RunCommand extends MUnitTargetCommandBase
 
 	function checkForExitOnFail()
 	{
-		if (console.getOption("result-exit-code") != null)
-		{
+		if (console.getOption("result-exit-code") != null){
 			resultExitCode = true;
 			Log.debug("resultExitCode? " + resultExitCode);
 		}
 	}
 
+	
+	/**
+	 * clear output directories
+	 */
 	function resetOutputDirectories():Void
 	{
 		if (!reportRunnerDir.exists)
 			reportRunnerDir.createDirectory();
-		else
-			reportRunnerDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
+		//else
+			//keep the content from previsouly executed tests , outside Munit tool
+			//reportRunnerDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
 
 		if (!reportTestDir.exists)
 			reportTestDir.createDirectory();
-		else
-			reportTestDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
+		//else
+			//keep the content from previsouly executed tests , outside Munit tool
+			//reportTestDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
 	}
 
+	
+	/**
+	 * generate TestRunner Pages for flash and html5 in reporRunnerDir ( report/test-runner/ )
+	 */
 	function generateTestRunnerPages()
 	{
 		var pageNames = [];
@@ -305,7 +327,7 @@ class RunCommand extends MUnitTargetCommandBase
 					var pageContent = getTemplateContent(templateName, {runnerName:file.fileName});
 					
 					var runnerPage = reportRunnerDir.resolvePath(pageName + ".html");
-
+					Log.debug("writes "+reportRunnerDir.path+"/"+pageName+".html");
 					runnerPage.writeString(pageContent);
 					pageNames.push(pageName);
 			}
@@ -344,6 +366,7 @@ class RunCommand extends MUnitTargetCommandBase
 		for (target in targets)
 		{
 			var file = target.file;
+			Log.debug("copy "+file.path+" to "+reportRunnerDir.path);
 			file.copyTo(reportRunnerDir.resolveFile(file.fileName));
 		}
 	}
@@ -389,14 +412,13 @@ class RunCommand extends MUnitTargetCommandBase
 		var serverFile:File = createServerAlias();
 
 		var errors:Array<String> = new Array();
-
 		
 		var serverExitCode:Int = 0;
 
 		tmpDir = File.current.resolveDirectory("tmp");
 
-		if (tmpDir.exists)
-			tmpDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
+		//if (tmpDir.exists)
+			//tmpDir.deleteDirectoryContents(RegExpUtil.SVN_REGEX, true);
 
 		tmpRunnerDir = tmpDir.resolveDirectory("runner");
 		
@@ -439,24 +461,24 @@ class RunCommand extends MUnitTargetCommandBase
 		//Sys.print( "Server stdout: " + serverProcess.stdout.readAll() );
 		//Sys.print( "Server stderr: " + serverProcess.stderr.readAll() );
 
-		if (reportTestDir.exists) {
-			Log.debug('delete content in '+reportTestDir.path);
-			reportTestDir.deleteDirectoryContents();
-		}
+		//if (reportTestDir.exists) {
+			//Log.debug('delete content in '+reportTestDir.path);
+			//reportTestDir.deleteDirectoryContents();
+		//}
 		
-		if (!FileSys.isWindows)
-		{
-			serverFile.deleteFile();
-		}
+		//if (!FileSys.isWindows){
+			//serverFile.deleteFile();
+		//}
 
-		Log.debug('delete '+tmpRunnerDir.path);
-		tmpRunnerDir.deleteDirectory();
+		//Log.debug('delete '+tmpRunnerDir.path);
+		//tmpRunnerDir.deleteDirectory();
+		
 		
 		Log.debug('copy '+tmpDir.path +" to "+reportTestDir.path);
 		tmpDir.copyTo(reportTestDir);
 		
-		Log.debug('delete ' + tmpDir.path);
-		tmpDir.deleteDirectory(true);
+		//Log.debug('delete ' + tmpDir.path);
+		//tmpDir.deleteDirectory(true);
 		
 		Log.debug('set cwd to '+console.dir.nativePath);
 		FileSys.setCwd(console.dir.nativePath);

@@ -1,14 +1,11 @@
-(function () { "use strict";
 var $estr = function() { return js.Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
-	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
 var BrowserTestsCompleteReporter = function() {
 };
-$hxExpose(BrowserTestsCompleteReporter, "BrowserTestsCompleteReporter");
 BrowserTestsCompleteReporter.__name__ = true;
 BrowserTestsCompleteReporter.main = function() {
 }
@@ -24,6 +21,26 @@ BrowserTestsCompleteReporter.sendReport = function(onData,onError) {
 BrowserTestsCompleteReporter.prototype = {
 	__class__: BrowserTestsCompleteReporter
 }
+var Hash = function() {
+	this.h = { };
+};
+Hash.__name__ = true;
+Hash.prototype = {
+	keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,__class__: Hash
+}
 var HxOverrides = function() { }
 HxOverrides.__name__ = true;
 HxOverrides.iter = function(a) {
@@ -33,8 +50,6 @@ HxOverrides.iter = function(a) {
 		return this.arr[this.cur++];
 	}};
 }
-var IMap = function() { }
-IMap.__name__ = true;
 var Std = function() { }
 Std.__name__ = true;
 Std.string = function(s) {
@@ -45,11 +60,11 @@ StringTools.__name__ = true;
 StringTools.urlEncode = function(s) {
 	return encodeURIComponent(s);
 }
-var haxe = {}
+var haxe = haxe || {}
 haxe.Http = function(url) {
 	this.url = url;
-	this.headers = new haxe.ds.StringMap();
-	this.params = new haxe.ds.StringMap();
+	this.headers = new Hash();
+	this.params = new Hash();
 	this.async = true;
 };
 haxe.Http.__name__ = true;
@@ -62,19 +77,24 @@ haxe.Http.prototype = {
 	}
 	,request: function(post) {
 		var me = this;
-		me.responseData = null;
-		var r = js.Browser.createXMLHttpRequest();
-		var onreadystatechange = function(_) {
+		var r = new js.XMLHttpRequest();
+		var onreadystatechange = function() {
 			if(r.readyState != 4) return;
-			var s;
-			try {
-				s = r.status;
-			} catch( e ) {
-				s = null;
-			}
+			var s = (function($this) {
+				var $r;
+				try {
+					$r = r.status;
+				} catch( e ) {
+					$r = null;
+				}
+				return $r;
+			}(this));
 			if(s == undefined) s = null;
 			if(s != null) me.onStatus(s);
-			if(s != null && s >= 200 && s < 400) me.onData(me.responseData = r.responseText); else if(s == null) me.onError("Failed to connect or resolve host"); else switch(s) {
+			if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else switch(s) {
+			case null: case undefined:
+				me.onError("Failed to connect or resolve host");
+				break;
 			case 12029:
 				me.onError("Failed to connect to host");
 				break;
@@ -82,7 +102,6 @@ haxe.Http.prototype = {
 				me.onError("Unknown host");
 				break;
 			default:
-				me.responseData = r.responseText;
 				me.onError("Http Error #" + r.status);
 			}
 		};
@@ -113,45 +132,20 @@ haxe.Http.prototype = {
 			r.setRequestHeader(h,this.headers.get(h));
 		}
 		r.send(uri);
-		if(!this.async) onreadystatechange(null);
+		if(!this.async) onreadystatechange();
 	}
 	,setPostData: function(data) {
 		this.postData = data;
-		return this;
 	}
 	,setParameter: function(param,value) {
 		this.params.set(param,value);
-		return this;
 	}
 	,setHeader: function(header,value) {
 		this.headers.set(header,value);
-		return this;
 	}
 	,__class__: haxe.Http
 }
-haxe.ds = {}
-haxe.ds.StringMap = function() {
-	this.h = { };
-};
-haxe.ds.StringMap.__name__ = true;
-haxe.ds.StringMap.__interfaces__ = [IMap];
-haxe.ds.StringMap.prototype = {
-	keys: function() {
-		var a = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
-		}
-		return HxOverrides.iter(a);
-	}
-	,get: function(key) {
-		return this.h["$" + key];
-	}
-	,set: function(key,value) {
-		this.h["$" + key] = value;
-	}
-	,__class__: haxe.ds.StringMap
-}
-var js = {}
+var js = js || {}
 js.Boot = function() { }
 js.Boot.__name__ = true;
 js.Boot.__string_rec = function(o,s) {
@@ -166,8 +160,7 @@ js.Boot.__string_rec = function(o,s) {
 				if(o.length == 2) return o[0];
 				var str = o[0] + "(";
 				s += "\t";
-				var _g1 = 2;
-				var _g = o.length;
+				var _g1 = 2, _g = o.length;
 				while(_g1 < _g) {
 					var i = _g1++;
 					if(i != 2) str += "," + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);
@@ -226,8 +219,7 @@ js.Boot.__interfLoop = function(cc,cl) {
 	if(cc == cl) return true;
 	var intf = cc.__interfaces__;
 	if(intf != null) {
-		var _g1 = 0;
-		var _g = intf.length;
+		var _g1 = 0, _g = intf.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var i1 = intf[i];
@@ -237,45 +229,38 @@ js.Boot.__interfLoop = function(cc,cl) {
 	return js.Boot.__interfLoop(cc.__super__,cl);
 }
 js.Boot.__instanceof = function(o,cl) {
-	if(cl == null) return false;
+	try {
+		if(o instanceof cl) {
+			if(cl == Array) return o.__enum__ == null;
+			return true;
+		}
+		if(js.Boot.__interfLoop(o.__class__,cl)) return true;
+	} catch( e ) {
+		if(cl == null) return false;
+	}
 	switch(cl) {
 	case Int:
-		return (o|0) === o;
+		return Math.ceil(o%2147483648.0) === o;
 	case Float:
 		return typeof(o) == "number";
 	case Bool:
-		return typeof(o) == "boolean";
+		return o === true || o === false;
 	case String:
 		return typeof(o) == "string";
 	case Dynamic:
 		return true;
 	default:
-		if(o != null) {
-			if(typeof(cl) == "function") {
-				if(o instanceof cl) {
-					if(cl == Array) return o.__enum__ == null;
-					return true;
-				}
-				if(js.Boot.__interfLoop(o.__class__,cl)) return true;
-			}
-		} else return false;
-		if(cl == Class && o.__name__ != null) return true;
-		if(cl == Enum && o.__ename__ != null) return true;
+		if(o == null) return false;
+		if(cl == Class && o.__name__ != null) return true; else null;
+		if(cl == Enum && o.__ename__ != null) return true; else null;
 		return o.__enum__ == cl;
 	}
 }
 js.Boot.__cast = function(o,t) {
 	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 }
-js.Browser = function() { }
-js.Browser.__name__ = true;
-js.Browser.createXMLHttpRequest = function() {
-	if(typeof XMLHttpRequest != "undefined") return new XMLHttpRequest();
-	if(typeof ActiveXObject != "undefined") return new ActiveXObject("Microsoft.XMLHTTP");
-	throw "Unable to create XMLHttpRequest object.";
-}
-var massive = {}
-massive.haxe = {}
+var massive = massive || {}
+if(!massive.haxe) massive.haxe = {}
 massive.haxe.Exception = function(message,info) {
 	this.message = message;
 	this.info = info;
@@ -290,13 +275,13 @@ massive.haxe.Exception.prototype = {
 	}
 	,__class__: massive.haxe.Exception
 }
-massive.haxe.util = {}
+if(!massive.haxe.util) massive.haxe.util = {}
 massive.haxe.util.ReflectUtil = function() { }
 massive.haxe.util.ReflectUtil.__name__ = true;
 massive.haxe.util.ReflectUtil.here = function(info) {
 	return info;
 }
-massive.munit = {}
+if(!massive.munit) massive.munit = {}
 massive.munit.MUnitException = function(message,info) {
 	massive.haxe.Exception.call(this,message,info);
 	this.type = massive.haxe.util.ReflectUtil.here({ fileName : "MUnitException.hx", lineNumber : 50, className : "massive.munit.MUnitException", methodName : "new"}).className;
@@ -353,7 +338,7 @@ massive.munit.TestResult.prototype = {
 		return massive.munit.TestResultType.UNKNOWN;
 	}
 	,get_location: function() {
-		if(this.name == "" && this.className == "") return ""; else return this.className + "#" + this.name;
+		return this.name == "" && this.className == ""?"":this.className + "#" + this.name;
 	}
 	,__class__: massive.munit.TestResult
 }
@@ -373,7 +358,7 @@ massive.munit.TestResultType.ERROR.__enum__ = massive.munit.TestResultType;
 massive.munit.TestResultType.IGNORE = ["IGNORE",4];
 massive.munit.TestResultType.IGNORE.toString = $estr;
 massive.munit.TestResultType.IGNORE.__enum__ = massive.munit.TestResultType;
-massive.munit.client = {}
+if(!massive.munit.client) massive.munit.client = {}
 massive.munit.client.HTTPClient = function(client,url,queueRequest) {
 	if(queueRequest == null) queueRequest = true;
 	if(url == null) url = "http://localhost:2000";
@@ -470,13 +455,12 @@ massive.munit.client.URLRequest.prototype = {
 	}
 	,__class__: massive.munit.client.URLRequest
 }
-massive.munit.util = {}
+if(!massive.munit.util) massive.munit.util = {}
 massive.munit.util.Timer = function(time_ms) {
 	this.id = massive.munit.util.Timer.arr.length;
 	massive.munit.util.Timer.arr[this.id] = this;
 	this.timerId = window.setInterval("massive.munit.util.Timer.arr[" + this.id + "].run();",time_ms);
 };
-$hxExpose(massive.munit.util.Timer, "massive.munit.util.Timer");
 massive.munit.util.Timer.__name__ = true;
 massive.munit.util.Timer.delay = function(f,time_ms) {
 	var t = new massive.munit.util.Timer(time_ms);
@@ -505,8 +489,9 @@ massive.munit.util.Timer.prototype = {
 	}
 	,__class__: massive.munit.util.Timer
 }
-var $_, $fid = 0;
-function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; };
+var $_;
+function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
+if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.prototype.__class__ = Array;
@@ -521,19 +506,24 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+var Void = { __ename__ : ["Void"]};
+js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
+	try {
+		return new ActiveXObject("Msxml2.XMLHTTP");
+	} catch( e ) {
+		try {
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		} catch( e1 ) {
+			throw "Unable to create XMLHttpRequest object.";
+		}
+	}
+}:(function($this) {
+	var $r;
+	throw "Unable to create XMLHttpRequest object.";
+	return $r;
+}(this));
 BrowserTestsCompleteReporter.CLIENT_RUNNER_HOST = "munit-tool-host";
 massive.munit.client.HTTPClient.queue = [];
 massive.munit.client.HTTPClient.responsePending = false;
 massive.munit.util.Timer.arr = new Array();
 BrowserTestsCompleteReporter.main();
-function $hxExpose(src, path) {
-	var o = typeof window != "undefined" ? window : exports;
-	var parts = path.split(".");
-	for(var ii = 0; ii < parts.length-1; ++ii) {
-		var p = parts[ii];
-		if(typeof o[p] == "undefined") o[p] = {};
-		o = o[p];
-	}
-	o[parts[parts.length-1]] = src;
-}
-})();

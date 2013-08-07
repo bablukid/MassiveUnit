@@ -30,7 +30,11 @@ class Target
 	public function toString():String
 	{
 
-		return "Target " + Std.string(type) + " " + file.toString();
+		try {
+			return "Target " + Std.string(type) + " " + file.toString();
+		}catch(e:Dynamic) {
+			return "Target " + type;
+		}
 	}
 
 	public function toHxmlString():String

@@ -1,16 +1,16 @@
 /**************************************** ****************************************
  * Copyright 2010 Massive Interactive. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  *    1. Redistributions of source code must retain the above copyright notice, this list of
  *       conditions and the following disclaimer.
- * 
+ *
  *    2. Redistributions in binary form must reproduce the above copyright notice, this list
  *       of conditions and the following disclaimer in the documentation and/or other materials
  *       provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY MASSIVE INTERACTIVE ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MASSIVE INTERACTIVE OR
@@ -20,7 +20,7 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Massive Interactive.
@@ -54,11 +54,12 @@ class ServerMain
 	static function main()
 	{
 		new ServerMain();
+		Sys.println("Hello i'm ServerMain");
 	}
 
 	public function new():Void
 	{
-		try 
+		try
 		{
 			processData();
 		}
@@ -74,6 +75,8 @@ class ServerMain
 	{
 		var client:String = neko.Web.getClientHeader(HTTPClient.CLIENT_HEADER_KEY);
 		var platform:String = neko.Web.getClientHeader(HTTPClient.PLATFORM_HEADER_KEY);
+		
+		Sys.println("I get "+neko.Web.getParams());
 		
 		tmpDir = File.current.resolveDirectory("tmp", true);
 		tmpDir.createDirectory();
@@ -109,9 +112,9 @@ class ServerMain
 		var result:String = ERROR;
 		switch(client)
 		{
-			case JUnitReportClient.DEFAULT_ID: 
+			case JUnitReportClient.DEFAULT_ID:
 				result = writeJUnitReportData(data, platformDir);
-			case PrintClient.DEFAULT_ID: 
+			case PrintClient.DEFAULT_ID:
 				result = writePrintData(data, platformDir);
 			case SummaryReportClient.DEFAULT_ID:
 				result = writeSummaryReportData(data, platformDir);
@@ -156,7 +159,7 @@ class ServerMain
 	
 	private function writeJUnitReportData(data:String, dir:File):String
 	{
-		var xml:Xml = Xml.parse(data);		
+		var xml:Xml = Xml.parse(data);
 		var suites = xml.firstChild().elementsNamed("testsuite");
 			
 		var rawDir:File = dir.resolveDirectory("xml", true);
@@ -175,23 +178,23 @@ class ServerMain
 			var failures:Int = Std.parseInt(test.get("failures"));
 			var errors:Int = Std.parseInt(test.get("errors"));
 			
-			if (failures == null) 
+			if (failures == null)
 				failures = 0;
-			if (errors == null) 
+			if (errors == null)
 				errors = 0;
 			
 			var failed:Bool = (failures > 0 || errors > 0);
 			
-			if (failed && result != FAILED) 
+			if (failed && result != FAILED)
 				result = FAILED;
-			else if (!failed && result == "") 
+			else if (!failed && result == "")
 				result = PASSED;
 			count++;
 		}
 		
 		if (count == 0)
 			result = PASSED; // no tests run
-		else if (result == "") 
+		else if (result == "")
 			result = ERROR;
 
 		return result;
@@ -210,10 +213,10 @@ class ServerMain
 		lines.reverse();
 		
 		for (line in lines)
-		{	
-			if (line.indexOf("PASSED") == 0) 
+		{
+			if (line.indexOf("PASSED") == 0)
 				return PASSED;
-			else if (line.indexOf("FAILED") == 0) 
+			else if (line.indexOf("FAILED") == 0)
 				return FAILED;
 		}
 		
@@ -233,7 +236,7 @@ class ServerMain
 		var lines:Array<String> = data.split("\n");
 
 		for (line in lines)
-		{	
+		{
 			if(line == "" || line.indexOf("#") == 0) continue;
 
 			var tmp = line.split(":");

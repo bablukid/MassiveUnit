@@ -190,7 +190,9 @@ class JUnitReportClient implements IAdvancedTestResultClient
 
 		xml.add("</testsuites>");
 		if (completionHandler != null) completionHandler(this);
-				
+		
+		#if neko Sys.println('reportFinalStatistics'); #end
+		
 		return xml.toString();
 	}
 	
