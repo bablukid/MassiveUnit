@@ -183,6 +183,14 @@ class HTTPClient implements IAdvancedTestResultClient
 
 	private function sendResult(result):Void
 	{
+		
+		trace("SUIS JE ANDROID ?");
+		#if android
+			trace("OUI !");
+			url = "http://10.0.2.2:2000";
+		#end
+		
+		
 		request = new URLRequest(url);
 		request.setHeader(CLIENT_HEADER_KEY, client.id);
 		request.setHeader(PLATFORM_HEADER_KEY, platform());
@@ -205,14 +213,24 @@ class HTTPClient implements IAdvancedTestResultClient
 
 	private function platform():String
 	{
-		#if (flash8 || flash7 || flash6) return "as2";
-		#elseif flash return "as3";
-		#elseif js return "js";
-		#elseif neko return "neko";
-		#elseif cpp return "cpp";
-		#elseif php return "php";
+		#if (flash8 || flash7 || flash6)
+			return "as2";
+		#elseif flash
+			return "as3";
+		#elseif js
+			return "js";
+		#elseif neko
+			return "neko";
+		#elseif cpp
+			#if android
+				return "android";
+			#else
+				return "cpp";
+			#end
+		#elseif php
+			return "php";
 		#end
-		return "unknown";
+			return "unknown";
 	}
 
 	private function onData(data:String):Void

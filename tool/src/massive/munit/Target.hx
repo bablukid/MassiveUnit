@@ -58,4 +58,5 @@ enum TargetType
 	js;
 	neko;
 	cpp;
+	android;
 }
