@@ -410,7 +410,6 @@ massive.munit.client.HTTPClient.prototype = {
 		return "unknown";
 	}
 	,sendResult: function(result) {
-		console.log("SUIS JE ANDROID ?");
 		this.request = new massive.munit.client.URLRequest(this.url);
 		this.request.setHeader("munit-clientId",this.client.id);
 		this.request.setHeader("munit-platformId",this.platform());

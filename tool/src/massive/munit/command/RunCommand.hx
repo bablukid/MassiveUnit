@@ -455,6 +455,8 @@ class RunCommand extends MUnitTargetCommandBase
 		else
 			resultMonitor.sendMessage("quit");
 
+		//is there results from result monitor thread
+		Log.debug("waiting for return from MonitorThread");
 		var platformResults:Bool = Thread.readMessage(true);
 
 		//serverProcess.kill();
@@ -509,6 +511,11 @@ class RunCommand extends MUnitTargetCommandBase
 	}
 
 
+	/**
+	 * this method is sent in a Thread.
+	 *
+	 * The first 3 lines are needed to get vars from the parent thread.
+	 */
 	private function monitorResults():Void
 	{
 		var mainThread = Thread.readMessage(true);
@@ -666,7 +673,7 @@ class RunCommand extends MUnitTargetCommandBase
 		
 		
 		//hack
-		if(FileSys.isLinux && browser == null) parameters.push(" 2>xdg-open.log & ");
+		//if(FileSys.isLinux && browser == null) parameters.push(" 2>xdg-open.log & ");
 
 		var exitCode:Int = Sys.command(parameters.join(" "));
 		

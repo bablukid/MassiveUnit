@@ -183,10 +183,9 @@ class HTTPClient implements IAdvancedTestResultClient
 
 	private function sendResult(result):Void
 	{
-		
-		trace("SUIS JE ANDROID ?");
+				
 		#if android
-			trace("OUI !");
+			//localhost is 10.0.2.2:2000 on android : http://developer.android.com/tools/devices/emulator.html#networkaddresses
 			url = "http://10.0.2.2:2000";
 		#end
 		
