@@ -54,7 +54,6 @@ class ServerMain
 	static function main()
 	{
 		new ServerMain();
-		Sys.println("Hello i'm ServerMain");
 	}
 
 	public function new():Void
