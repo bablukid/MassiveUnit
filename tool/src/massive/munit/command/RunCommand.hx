@@ -131,7 +131,6 @@ class RunCommand extends MUnitTargetCommandBase
 		Log.debug("checkForBrowserKeepAliveFlag");
 		checkForBrowserKeepAliveFlag();
 		
-		
 		//Sys.sleep(5);
 		Log.debug("resetOutputDirectories");
 		resetOutputDirectories();
@@ -443,17 +442,24 @@ class RunCommand extends MUnitTargetCommandBase
 		resultMonitor.sendMessage(serverProcess);
 		resultMonitor.sendMessage(serverTimeoutTimeSec);
 
-		Log.debug("Launch file");
-		if (hasNekoTests)
+		
+		if (hasNekoTests){
+			Log.debug("Launch neko file");
 			launchNeko(nekoFile);
+		}
 
-		if (hasCPPTests)
+		if (hasCPPTests) {
+			Log.debug("Launch cpp file");
 			launchCPP(cppFile);
+		}
 
-		if (hasBrowserTests)
+		if (hasBrowserTests) {
+			Log.debug("Launch browser");
 			launchFile(indexPage);
-		else
+		}else {
+			Log.debug("send quit");
 			resultMonitor.sendMessage("quit");
+		}
 
 		//is there results from result monitor thread
 		Log.debug("waiting for return from MonitorThread");
