@@ -146,7 +146,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suitePassCount++;
 		
-		testSuiteXML.add("<testcase classname=\"" + result.className +"_"+platform()+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" />" + newline);
+		testSuiteXML.add("<testcase classname=\"" + result.className + "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" />" + newline);
 	}
 	
 	/**
@@ -158,7 +158,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suiteFailCount++;
 		
-		testSuiteXML.add( "<testcase classname=\"" + result.className +"_"+platform()+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
+		testSuiteXML.add( "<testcase classname=\"" + result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
 		testSuiteXML.add("<failure message=\"" + result.failure.message + "\" type=\"" + result.failure.type + "\">");
 		testSuiteXML.add(result.failure);
 		testSuiteXML.add("</failure>" + newline);
@@ -174,7 +174,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suiteErrorCount++;
 
-		testSuiteXML.add("<testcase classname=\"" + result.className +"_"+platform()+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
+		testSuiteXML.add("<testcase classname=\"" + result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
 		testSuiteXML.add("<error message=\"" + result.error.message + "\" type=\"" + result.error.type + "\">");
 		testSuiteXML.add(result.error);
 		testSuiteXML.add("</error>" + newline);
@@ -224,7 +224,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 		var suiteTestCount:Int = suitePassCount + suiteFailCount + suiteErrorCount;
 		suiteExecutionTime = Timer.stamp() - suiteExecutionTime;
 
-		var header:String = "<testsuite errors=\"" + suiteErrorCount + "\" failures=\"" + suiteFailCount + "\" hostname=\"\" name=\"" + currentTestClass + "\" tests=\"" + suiteTestCount + "\" time=\"" +MathUtil.round(suiteExecutionTime, 5) + "\" timestamp=\"" + Date.now() + "\">" + newline;
+		var header:String = "<testsuite errors=\"" + suiteErrorCount + "\" failures=\"" + suiteFailCount + "\" hostname=\"\" name=\"" +platform()+"."+ currentTestClass + "\" tests=\"" + suiteTestCount + "\" time=\"" +MathUtil.round(suiteExecutionTime, 5) + "\" timestamp=\"" + Date.now() + "\">" + newline;
 		var footer:String = "</testsuite>" + newline;
 
 		testSuiteXML.add("<system-out></system-out>" + newline);
