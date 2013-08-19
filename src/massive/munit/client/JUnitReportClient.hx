@@ -146,7 +146,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suitePassCount++;
 		
-		testSuiteXML.add("<testcase classname=\"" + result.className + "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" />" + newline);
+		testSuiteXML.add("<testcase classname=\"" +platform()+"."+ result.className + "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" />" + newline);
 	}
 	
 	/**
@@ -158,7 +158,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suiteFailCount++;
 		
-		testSuiteXML.add( "<testcase classname=\"" + result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
+		testSuiteXML.add( "<testcase classname=\"" +platform()+"."+ result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
 		testSuiteXML.add("<failure message=\"" + result.failure.message + "\" type=\"" + result.failure.type + "\">");
 		testSuiteXML.add(result.failure);
 		testSuiteXML.add("</failure>" + newline);
@@ -174,7 +174,7 @@ class JUnitReportClient implements IAdvancedTestResultClient
 	{
 		suiteErrorCount++;
 
-		testSuiteXML.add("<testcase classname=\"" + result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
+		testSuiteXML.add("<testcase classname=\"" + platform()+"."+result.className+ "\" name=\"" + result.name + "\" time=\"" + MathUtil.round(result.executionTime, 5) + "\" >" + newline);
 		testSuiteXML.add("<error message=\"" + result.error.message + "\" type=\"" + result.error.type + "\">");
 		testSuiteXML.add(result.error);
 		testSuiteXML.add("</error>" + newline);
